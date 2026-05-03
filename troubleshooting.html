@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fix OpenCV on Windows: DLL Errors, PATH, Camera Issues</title>
+  <meta name="description" content="Troubleshoot OpenCV 4.12.0 on Windows: fix DLL import errors, PATH issues, camera problems, and common runtime failures for Python and C++." />
+  <link rel="canonical" href="https://opencv-windows.github.io/troubleshooting.html" />
+
+  <!-- Icons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Fix OpenCV on Windows: DLL Errors, PATH, Camera Issues" />
+  <meta property="og:description" content="Common OpenCV problems on Windows and how to fix them: import errors, missing DLLs, PATH misconfiguration, camera and video input issues." />
+  <meta property="og:url" content="https://opencv-windows.github.io/troubleshooting.html" />
+  <meta property="og:image" content="https://opencv-windows.github.io/og-image.png" />
+  <meta property="og:updated_time" content="" id="ogUpdatedTime" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Fix OpenCV on Windows" />
+  <meta name="twitter:description" content="Quick fixes for DLL, PATH, import, and camera problems when using OpenCV on Windows." />
+  <meta name="twitter:image" content="https://opencv-windows.github.io/og-image.png" />
+
+  <meta name="last-modified" content="" id="lastModifiedMeta" />
+  <meta name="theme-color" content="#0B1221" />
+
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+
+  <style>
+    :root{--bg:#FFFFFF;--text:#0B1221;--muted:#5A6373;--surface:#F5F7FA;--border:#E5EAF0;--blue:#1E88E5;--green:#43A047;--red:#E53935;--focus:#FFB300;--shadow:rgba(11,18,33,.08);--maxw:1200px}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;line-height:1.5}
+    a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}a:focus-visible,button:focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
+    header{position:sticky;top:0;z-index:50;background:var(--bg);border-bottom:1px solid var(--border);box-shadow:0 4px 12px var(--shadow)}.wrap{max-width:var(--maxw);margin:0 auto;padding:0 16px}.topbar{display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 0}.brand{display:flex;align-items:center;gap:12px}.brand .logo{width:36px;height:36px}.brand .title{font-weight:700;font-size:18px}
+    nav ul{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0}nav a{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px}nav a:hover{background:var(--surface)}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:28px 0}.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;box-shadow:0 8px 24px var(--shadow)}.hero h1{margin:0 0 10px;font-size:28px}.hero p{margin:0 0 14px;color:var(--muted)}
+    .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin:12px 0 0}.btn{display:inline-flex;align-items:center;gap:10px;padding:12px 16px;border-radius:12px;border:1px solid var(--border);font-weight:600;cursor:pointer;transition:transform .05s,box-shadow .2s;text-decoration:none}.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue);box-shadow:0 6px 16px rgba(30,136,229,.18)}.btn-secondary{background:var(--bg);color:var(--text)}
+    .content{display:grid;grid-template-columns:2fr 1fr;gap:18px}.section{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:16px}.section h2{margin:0 0 10px;font-size:22px}.section h3{margin:14px 0 8px;font-size:18px}.section ul{margin:0;padding-left:18px}.tips li{margin:6px 0}
+    .code{background:#0b1221;color:#fff;padding:12px;border-radius:8px;overflow:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    .faq details{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px}.faq summary{font-weight:600}.faq details+details{margin-top:10px}
+    footer{margin-top:36px;border-top:1px solid var(--border);padding:18px 0;color:var(--muted)}
+    .cookie-banner{position:fixed;bottom:18px;right:18px;z-index:1000;max-width:420px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 8px 24px var(--shadow);padding:14px;display:none}.cookie-banner.show{display:block}.cookie-actions{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}.cookie-banner button{padding:8px 12px;border-radius:10px;border:1px solid var(--border);cursor:pointer}.cookie-banner .accept{background:var(--green);color:#fff;border-color:var(--green)}.cookie-banner .decline{background:var(--bg);color:var(--text)}.cookie-banner .close{background:transparent}
+    @media(max-width:1024px){.hero{grid-template-columns:1fr}.content{grid-template-columns:1fr}.nav ul{gap:6px}}
+  </style>
+
+  <!-- SVG sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="ic-opencv" viewBox="0 0 64 64" fill="none">
+      <circle cx="20" cy="20" r="12" fill="#E53935"/>
+      <circle cx="44" cy="20" r="12" fill="#1E88E5"/>
+      <circle cx="32" cy="42" r="12" fill="#43A047"/>
+    </symbol>
+    <symbol id="ic-download" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3a1 1 0 0 1 1 1v9.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-5.364 5.364a1.5 1.5 0 0 1-2.121 0L5.293 11.707a1 1 0 1 1 1.414-1.414L10 13.586V4a1 1 0 0 1 1-1z"/>
+      <path d="M4 19a1 1 0 0 0 1 1h14a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1z"/>
+    </symbol>
+    <symbol id="ic-fix" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21.7 7.3a1 1 0 0 1 0 1.4l-8.3 8.3a3 3 0 0 1-2.1.9H6v-5.3a3 3 0 0 1 .9-2.1l8.3-8.3a1 1 0 0 1 1.4 0l5.1 5.1zM7 18h3v-3H7v3z"/>
+    </symbol>
+    <symbol id="ic-python" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M7 2h6a5 5 0 0 1 5 5v3H9a3 3 0 0 1-3-3V2zM17 22H11a5 5 0 0 1-5-5v-3h9a3 3 0 0 1 3 3v5z"/>
+    </symbol>
+    <symbol id="ic-cpp" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l9 5v10l-9 5-9-5V7l9-5zm-1 6a3 3 0 1 0 0 6h2v2h2V8h-4z"/>
+    </symbol>
+  </svg>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar" role="navigation" aria-label="Main">
+      <a href="/" class="brand" aria-label="OpenCV for Windows">
+        <svg class="logo" aria-hidden="true"><use href="#ic-opencv" /></svg>
+        <span class="title">OpenCV for Windows</span>
+      </a>
+      <nav>
+        <ul>
+          <li><a href="/python.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-python"/></svg> Python</a></li>
+          <li><a href="/cpp-visual-studio.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-cpp"/></svg> C++ & Visual Studio</a></li>
+          <li><a href="/cuda-gpu.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-gpu"/></svg> CUDA / GPU</a></li>
+          <li><a href="/troubleshooting.html" aria-current="page"><svg width="18" height="18" aria-hidden="true"><use href="#ic-fix"/></svg> Troubleshooting</a></li>
+          <li><a href="/install-methods.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-compare"/></svg> Install Methods</a></li>
+          <li><a href="/quickstart.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-quick"/></svg> Quickstart</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="h1">
+      <div class="card">
+        <h1 id="h1">Fix OpenCV on Windows: DLL Errors, PATH, Camera Issues</h1>
+        <p>Quick, practical fixes for the most common OpenCV problems on Windows 11/10. Covers Python import errors, missing MSVCP/Microsoft runtime DLLs, PATH, camera not opening, and other runtime issues.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary js-download" href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" rel="noopener" target="_blank" aria-label="Download OpenCV 4.12.0 for Windows">
+            <svg width="20" height="20" aria-hidden="true"><use href="#ic-download"/></svg>
+            Download OpenCV 4.12.0 for Windows
+          </a>
+          <a class="btn btn-secondary" href="/python.html">Python Guide</a>
+          <a class="btn btn-secondary" href="/cpp-visual-studio.html">C++ Guide</a>
+        </div>
+      </div>
+      <div class="card" aria-label="TL;DR troubleshooting">
+        <h2 style="margin:0 0 10px">TL;DR — Fast fixes</h2>
+        <ol style="margin:0 0 8px;padding-left:18px">
+          <li>For import errors, use a fresh virtual environment and reinstall OpenCV and numpy.</li>
+          <li>If a DLL is missing, add OpenCV bin to PATH or copy the DLLs next to the executable.</li>
+          <li>For camera issues, ensure correct device index and that no other app uses the camera.</li>
+        </ol>
+        <p style="margin:0;color:var(--muted)">If you still have problems, follow the detailed checklist below.</p>
+      </div>
+    </section>
+
+    <section class="content" aria-label="Troubleshooting details">
+      <div class="section">
+        <h2>1) Python import errors: ImportError: DLL load failed</h2>
+        <p>Symptoms: import cv2 fails with "DLL load failed" or "module not found" messages.</p>
+        <h3>Checklist</h3>
+        <ul class="tips">
+          <li>Create a clean virtual environment (venv or conda) and activate it.</li>
+          <li>Run: <code class="code">python -m pip install --upgrade pip setuptools wheel</code></li>
+          <li>Install OpenCV and numpy inside that env: <code class="code">pip install opencv-contrib-python numpy</code></li>
+          <li>If using conda, consider using pip inside conda env or conda-forge packages.</li>
+          <li>Verify which python is used: <code class="code">python -c "import sys;print(sys.executable)"</code></li>
+        </ul>
+
+        <h2>2) Missing MSVC or runtime DLLs</h2>
+        <p>Symptoms: errors mentioning MSVCP140.dll, VCRUNTIME140.dll, or similar.</p>
+        <h3>Fixes</h3>
+        <ul class="tips">
+          <li>Install the latest Microsoft Visual C++ Redistributable (x64) from Microsoft official downloads.</li>
+          <li>Ensure the redistributable matches the MSVC version used for the OpenCV build (common recent versions cover many builds).</li>
+          <li>Restart your system after installation if issues persist.</li>
+        </ul>
+
+        <h2>3) "The program can't start because ... dll is missing" for C++</h2>
+        <p>Symptoms: Running your EXE fails complaining about missing OpenCV DLLs.</p>
+        <h3>Fixes</h3>
+        <ul class="tips">
+          <li>Add OpenCV <em>bin</em> directory to the System or User PATH: Control Panel → System → Advanced system settings → Environment Variables.</li>
+          <li>Or copy required Opencv binaries (DLLs) into the same folder as your executable.</li>
+          <li>Match runtime types: don't mix Debug builds with Release DLLs and ensure all libs are x64.</li>
+        </ul>
+
+        <h2>4) Camera not opening or strange camera errors</h2>
+        <p>Symptoms: VideoCapture(0) returns empty frames or fails.</p>
+        <h3>Checklist</h3>
+        <ul class="tips">
+          <li>Confirm camera index: try 0,1,2 etc. Multiple cameras/devices change indices.</li>
+          <li>Ensure another application (Teams/Zoom/Browser) is not locking the camera.</li>
+          <li>Check Windows camera privacy settings: Settings → Privacy & security → Camera → allow apps to access camera.</li>
+          <li>Test with a minimal script:</li>
+        </ul>
+        <pre class="code">import cv2
+cap = cv2.VideoCapture(0)
+if not cap.isOpened():
+    print('Camera open failed')
+else:
+    ret, frame = cap.read()
+    print('Frame ok:', ret)
+cap.release()</pre>
+
+        <h2>5) Video I/O / GStreamer / FFmpeg issues</h2>
+        <p>Symptoms: imread works but VideoCapture for files or streams fails, or certain codecs are unsupported.</p>
+        <h3>Notes & fixes</h3>
+        <ul class="tips">
+          <li>Official wheels include common FFmpeg builds but not all codec variants.</li>
+          <li>Use opencv-python packages that include ffmpeg support; for custom cases, build OpenCV with your desired codec support.</li>
+          <li>Ensure file paths do not contain non-ASCII characters — on Windows, this can cause issues with older I/O builds.</li>
+        </ul>
+
+        <h2>6) Permission and antivirus blocking</h2>
+        <ul class="tips">
+          <li>Sometimes antivirus or Windows Defender may quarantine DLLs. Check quarantine logs and exclude the OpenCV install folder if safe.</li>
+          <li>Run your IDE/terminal as Administrator if you encounter permission-denied issues during install.</li>
+        </ul>
+
+        <h2 style="margin-top:16px">7) If nothing helps — a final checklist</h2>
+        <ol>
+          <li>Use a fresh user account or clean virtual environment.</li>
+          <li>Install Microsoft Visual C++ Redistributable (x64).</li>
+          <li>Ensure Python and OpenCV wheel architectures match (x64).</li>
+          <li>Try the official OpenCV Windows installer to get prebuilt libraries: <a href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" target="_blank" rel="noopener">opencv-4.12.0-windows.exe</a>.</li>
+          <li>Search the Troubleshooting page sections for the exact error text — copy-paste the message into Google/GitHub issues.</li>
+        </ol>
+      </div>
+
+      <aside class="section" aria-label="Quick links and tools">
+        <h2>Quick links</h2>
+        <ul>
+          <li><a href="/python.html">Python guide</a></li>
+          <li><a href="/cpp-visual-studio.html">C++ Visual Studio guide</a></li>
+          <li><a href="/install-methods.html">Install methods comparison</a></li>
+          <li><a href="/quickstart.html">Quickstart</a></li>
+          <li><a href="https://github.com/opencv/opencv/issues" target="_blank" rel="noopener">OpenCV GitHub Issues</a></li>
+        </ul>
+        <div class="card" style="margin-top:14px">
+          <h3 style="margin:0 0 8px">Download official installer</h3>
+          <a class="btn btn-primary js-download" href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe">
+            <svg width="18" height="18" aria-hidden="true"><use href="#ic-download"/></svg>
+            Download .exe
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" style="margin-top:18px" aria-label="FAQ">
+      <h2>Common error FAQs</h2>
+      <div class="faq">
+        <details>
+          <summary>Why does import cv2 fail with "DLL load failed"?</summary>
+          <div>Usually due to mismatched or missing MSVC runtime libraries, incompatible numpy, or the wrong Python interpreter. Try a fresh venv, reinstall numpy and OpenCV, and install the Visual C++ Redistributable (x64).</div>
+        </details>
+        <details>
+          <summary>Which Visual C++ Redistributable do I need?</summary>
+          <div>Install the latest supported x64 Visual C++ Redistributable. Recent builds typically require the Universal CRT and MSVC runtime; download from Microsoft official site.</div>
+        </details>
+        <details>
+          <summary>How to make OpenCV DLLs load at runtime?</summary>
+          <div>Add the OpenCV <em>bin</em> folder to the System PATH or copy DLLs to the executable directory; check architecture (x64) and runtime (Release/Debug).</div>
+        </details>
+        <details>
+          <summary>Camera works in other apps but not in OpenCV</summary>
+          <div>Try different device indices, ensure camera permissions for apps are enabled, and close other apps that may access the camera. Test with a minimal capture script.</div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" style="margin-top:18px" aria-label="Related">
+      <h2>Related pages</h2>
+      <ul>
+        <li><a href="/python.html">OpenCV on Windows with Python</a></li>
+        <li><a href="/cpp-visual-studio.html">OpenCV C++ on Windows: Visual Studio Setup Guide</a></li>
+        <li><a href="/install-methods.html">OpenCV for Windows: pip vs conda vs source vs vcpkg</a></li>
+        <li><a href="/quickstart.html">OpenCV Windows Quickstart: Camera, Images, and Video I/O</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="wrap" role="contentinfo">
+    <div>Last modified: <span id="lastModifiedText">—</span></div>
+    <div style="margin-top:6px">© OpenCV for Windows — Unofficial helper site for the official OpenCV Windows installer. Not affiliated with OpenCV.</div>
+  </footer>
+
+  <!-- Cookie banner -->
+  <div class="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    <div><strong>Cookies & Analytics</strong></div>
+    <div style="color:var(--muted)">We use Google Analytics (GA4) to improve this site. You can accept or decline analytics storage. You may change your choice anytime.</div>
+    <div class="cookie-actions">
+      <button class="accept">Accept</button>
+      <button class="decline">Decline</button>
+      <button class="close" aria-label="Close banner">Close</button>
+    </div>
+  </div>
+
+  <!-- GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PJKKMYVY7D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    gtag('consent','default',{analytics_storage:'denied',ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});
+    gtag('js', new Date());
+    gtag('config', 'G-PJKKMYVY7D', { anonymize_ip: true });
+  </script>
+
+  <script>
+    (function(){
+      var lm = document.lastModified || new Date().toISOString();
+      try{document.getElementById('lastModifiedMeta').setAttribute('content', lm);document.getElementById('ogUpdatedTime').setAttribute('content', new Date(lm).toISOString());document.getElementById('lastModifiedText').textContent = new Date(lm).toLocaleString();}catch(e){}
+
+      var banner = document.querySelector('.cookie-banner');
+      var accepted = localStorage.getItem('ga_consent');
+      function applyConsent(state){ if(state==='granted'){gtag('consent','update',{analytics_storage:'granted'});}else{gtag('consent','update',{analytics_storage:'denied'});} }
+      if(!accepted){ banner.classList.add('show'); } else { applyConsent(accepted==='yes'?'granted':'denied'); }
+      banner.querySelector('.accept').addEventListener('click', function(){ localStorage.setItem('ga_consent','yes'); applyConsent('granted'); banner.classList.remove('show'); });
+      banner.querySelector('.decline').addEventListener('click', function(){ localStorage.setItem('ga_consent','no'); applyConsent('denied'); banner.classList.remove('show'); });
+      banner.querySelector('.close').addEventListener('click', function(){ banner.classList.remove('show'); });
+
+      function trackDownload(el){ var url = el.getAttribute('data-file-url'); var label = el.getAttribute('data-file-label'); if(!url||!label) return; gtag('event','file_download',{event_category:'downloads', event_label: label, file_url: url}); }
+      document.querySelectorAll('.js-download').forEach(function(el){ el.addEventListener('click', function(){ trackDownload(el); }); el.addEventListener('auxclick', function(){ trackDownload(el); }); el.addEventListener('keydown', function(e){ if(e.key==='Enter'||e.key===' ') trackDownload(el); }); });
+    })();
+  </script>
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {"@type":"WebSite","name":"OpenCV for Windows","url":"https://opencv-windows.github.io/","inLanguage":"en","potentialAction":{"@type":"SearchAction","target":"https://opencv-windows.github.io/?q={search_term_string}","query-input":"required name=search_term_string"}},
+      {"@type":"WebPage","name":"Fix OpenCV on Windows: DLL Errors, PATH, Camera Issues","url":"https://opencv-windows.github.io/troubleshooting.html","isPartOf":{"@id":"https://opencv-windows.github.io/"},"inLanguage":"en","dateModified":"","breadcrumb":{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://opencv-windows.github.io/"},{"@type":"ListItem","position":2,"name":"Troubleshooting","item":"https://opencv-windows.github.io/troubleshooting.html"}]}}
+      ,{"@type":"SoftwareApplication","name":"OpenCV for Windows","applicationCategory":"DeveloperApplication","operatingSystem":"Windows 11; Windows 10 (64-bit)","softwareVersion":"4.12.0","downloadUrl":"https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"url":"https://opencv-windows.github.io/troubleshooting.html","screenshot":"https://opencv-windows.github.io/og-image.png","potentialAction":{"@type":"InstallAction","target":"https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe"},"operatingSystemVersion":"Windows 10/11 x64"}
+      ,{"@type":"FAQPage","mainEntity":[
+        {"@type":"Question","name":"Why does import cv2 fail with 'DLL load failed'?","acceptedAnswer":{"@type":"Answer","text":"Usually due to mismatched or missing MSVC runtime libraries, incompatible numpy, or the wrong Python interpreter. Try a fresh venv, reinstall numpy and OpenCV, and install the Visual C++ Redistributable (x64)."}},
+        {"@type":"Question","name":"Which Visual C++ Redistributable do I need?","acceptedAnswer":{"@type":"Answer","text":"Install the latest supported x64 Visual C++ Redistributable from Microsoft. Recent builds typically require the Universal CRT and MSVC runtime."}},
+        {"@type":"Question","name":"How to make OpenCV DLLs load at runtime?","acceptedAnswer":{"@type":"Answer","text":"Add the OpenCV bin folder to PATH or copy DLLs to the executable directory; check architecture (x64) and runtime (Release/Debug)."}}
+      ]}
+    ]
+  }
+  </script>
+</body>
+</html>

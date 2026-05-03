@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenCV for Windows: Download & Install (Windows 11/10)</title>
+  <meta name="description" content="Official OpenCV for Windows quick install. Download the OpenCV 4.12.0 Windows installer, learn Python/C++ setup, CUDA acceleration, and fix common DLL/PATH issues." />
+  <link rel="canonical" href="https://opencv-windows.github.io/" />
+
+  <!-- Icons (will be provided at domain root) -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="OpenCV for Windows: Download & Install" />
+  <meta property="og:description" content="Download OpenCV 4.12.0 for Windows and follow step-by-step guides for Python, C++, CUDA. Troubleshooting and quickstart included." />
+  <meta property="og:url" content="https://opencv-windows.github.io/" />
+  <meta property="og:image" content="https://opencv-windows.github.io/og-image.png" />
+  <meta property="og:updated_time" content="" id="ogUpdatedTime" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="OpenCV for Windows: Download & Install" />
+  <meta name="twitter:description" content="Official OpenCV 4.12.0 Windows installer and setup guides for Python/C++/CUDA." />
+  <meta name="twitter:image" content="https://opencv-windows.github.io/og-image.png" />
+
+  <!-- Last modified meta -->
+  <meta name="last-modified" content="" id="lastModifiedMeta" />
+  <meta name="theme-color" content="#0B1221" />
+
+  <!-- Preconnect for GA -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --text: #0B1221;
+      --muted: #5A6373;
+      --surface: #F5F7FA;
+      --border: #E5EAF0;
+      --blue: #1E88E5; /* OpenCV palette accents */
+      --green: #43A047;
+      --red: #E53935;
+      --focus: #FFB300; /* amber for focus ring */
+      --shadow: rgba(11, 18, 33, 0.08);
+      --maxw: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+      line-height: 1.5;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+    img { max-width: 100%; height: auto; }
+
+    header {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 16px; }
+    .topbar { display: flex; align-items: center; gap: 16px; justify-content: space-between; padding: 12px 0; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .logo { width: 36px; height: 36px; }
+    .brand .title { font-weight: 700; font-size: 18px; }
+
+    nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; }
+    nav a { display: inline-flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; }
+    nav a:hover { background: var(--surface); text-decoration: none; }
+
+    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; padding: 28px 0; }
+    .hero .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 28px; }
+    .hero p { margin: 0 0 14px; color: var(--muted); }
+
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 0; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border);
+      font-weight: 600; cursor: pointer; text-decoration: none; transition: transform .05s ease-in-out, box-shadow .2s;
+    }
+    .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 6px 16px rgba(30,136,229,.18); }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-secondary { background: var(--bg); color: var(--text); }
+    .btn-ghost { background: transparent; }
+
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px; padding: 16px;
+    }
+    .panel h3 { margin: 0 0 8px; font-size: 18px; }
+    .panel p { margin: 0; color: var(--muted); }
+
+    .methods { margin: 24px 0; }
+    .methods .panel li { margin: 8px 0; }
+
+    .tiles { margin: 32px 0; }
+    .tile { display: flex; gap: 12px; align-items: flex-start; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; }
+    .tile h4 { margin: 0 0 6px; }
+    .tile p { margin: 0; color: var(--muted); }
+
+    .faq { margin: 24px 0; }
+    .faq details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .faq summary { font-weight: 600; }
+    .faq details + details { margin-top: 10px; }
+
+    .related { margin: 24px 0; }
+    .related ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .related a { display: block; padding: 12px; border: 1px solid var(--border); border-radius: 10px; }
+
+    footer { margin-top: 36px; border-top: 1px solid var(--border); padding: 18px 0; color: var(--muted); }
+
+    /* Cookie banner */
+    .cookie-banner {
+      position: fixed; bottom: 18px; right: 18px; z-index: 1000;
+      max-width: 420px; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; box-shadow: 0 8px 24px var(--shadow);
+      padding: 14px; display: none;
+    }
+    .cookie-banner.show { display: block; }
+    .cookie-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .cookie-banner button { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
+    .cookie-banner .accept { background: var(--green); color: #fff; border-color: var(--green); }
+    .cookie-banner .decline { background: var(--bg); color: var(--text); }
+    .cookie-banner .close { background: transparent; }
+
+    /* Responsive */
+    @media (max-width: 960px) {
+      .hero { grid-template-columns: 1fr; }
+      .grid { grid-template-columns: 1fr; }
+      .related ul { grid-template-columns: 1fr; }
+      nav ul { gap: 6px; }
+    }
+  </style>
+
+  <!-- SVG sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="ic-opencv" viewBox="0 0 64 64" fill="none">
+      <circle cx="20" cy="20" r="12" fill="#E53935"/>
+      <circle cx="44" cy="20" r="12" fill="#1E88E5"/>
+      <circle cx="32" cy="42" r="12" fill="#43A047"/>
+    </symbol>
+    <symbol id="ic-download" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3a1 1 0 0 1 1 1v9.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-5.364 5.364a1.5 1.5 0 0 1-2.121 0L5.293 11.707a1 1 0 1 1 1.414-1.414L10 13.586V4a1 1 0 0 1 1-1z"/>
+      <path d="M4 19a1 1 0 0 0 1 1h14a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1z"/>
+    </symbol>
+    <symbol id="ic-external" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M14 3h7v7h-2V6.414l-7.293 7.293-1.414-1.414L17.586 5H14V3z"/>
+      <path d="M19 19H5V5h7V3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8h-2v8z"/>
+    </symbol>
+    <symbol id="ic-python" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M7 2h6a5 5 0 0 1 5 5v3H9a3 3 0 0 1-3-3V2zM17 22H11a5 5 0 0 1-5-5v-3h9a3 3 0 0 1 3 3v5z"/>
+    </symbol>
+    <symbol id="ic-cpp" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l9 5v10l-9 5-9-5V7l9-5zm-1 6a3 3 0 1 0 0 6h2v2h2V8h-4z"/>
+    </symbol>
+    <symbol id="ic-gpu" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 6h12a2 2 0 0 1 2 2v8h2v2h-2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm2 4h8v2H6v-2zm0 4h6v2H6v-2z"/>
+    </symbol>
+    <symbol id="ic-fix" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21.7 7.3a1 1 0 0 1 0 1.4l-8.3 8.3a3 3 0 0 1-2.1.9H6v-5.3a3 3 0 0 1 .9-2.1l8.3-8.3a1 1 0 0 1 1.4 0l5.1 5.1zM7 18h3v-3H7v3z"/>
+    </symbol>
+    <symbol id="ic-compare" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/>
+    </symbol>
+    <symbol id="ic-quick" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5v5l4 2-1 1-5-3V7h2z"/>
+    </symbol>
+    <symbol id="ic-windows" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M3 5l9-2v8H3V5zm9 9H3v7l9-2v-5zm1-11l8-2v10h-8V3zm8 11h-8v7l8-2v-5z"/>
+    </symbol>
+  </svg>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar" role="navigation" aria-label="Main">
+      <a href="/" class="brand" aria-label="OpenCV for Windows">
+        <svg class="logo" aria-hidden="true"><use href="#ic-opencv" /></svg>
+        <span class="title">OpenCV for Windows</span>
+      </a>
+      <nav>
+        <ul>
+          <li><a href="/python.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-python"/></svg> Python</a></li>
+          <li><a href="/cpp-visual-studio.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-cpp"/></svg> C++ & Visual Studio</a></li>
+          <li><a href="/cuda-gpu.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-gpu"/></svg> CUDA / GPU</a></li>
+          <li><a href="/troubleshooting.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-fix"/></svg> Troubleshooting</a></li>
+          <li><a href="/install-methods.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-compare"/></svg> Install Methods</a></li>
+          <li><a href="/quickstart.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-quick"/></svg> Quickstart</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="h1">
+      <div class="card">
+        <h1 id="h1">OpenCV for Windows: Download & Install (Windows 11/10)</h1>
+        <p>Get the official OpenCV 4.12.0 installer for Windows and start computer vision in minutes. Optimized content for Google/Bing and AI answers, mobile-friendly, and accessible.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary js-download" href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" rel="noopener" target="_blank" aria-label="Download OpenCV 4.12.0 for Windows">
+            <svg width="20" height="20" aria-hidden="true"><use href="#ic-download"/></svg>
+            Download OpenCV 4.12.0 for Windows
+          </a>
+          <a class="btn btn-secondary" href="/python.html" aria-label="OpenCV on Windows with Python">
+            <svg width="18" height="18" aria-hidden="true"><use href="#ic-python"/></svg>
+            Python Setup
+          </a>
+          <a class="btn btn-secondary" href="/cpp-visual-studio.html" aria-label="OpenCV C++ Visual Studio guide">
+            <svg width="18" height="18" aria-hidden="true"><use href="#ic-cpp"/></svg>
+            C++ Guide
+          </a>
+        </div>
+        <ul style="margin: 14px 0 0; padding-left: 18px; color: var(--muted)">
+          <li>Compatibility: Windows 11/10, 64-bit</li>
+          <li>Includes: Core modules, prebuilt binaries</li>
+          <li>License: Open-source (BSD)</li>
+        </ul>
+      </div>
+      <div class="card" aria-label="TL;DR quick install steps">
+        <h2 style="margin:0 0 10px">TL;DR — Quick Install</h2>
+        <ol style="margin:0 0 8px; padding-left: 18px">
+          <li>Click “Download OpenCV 4.12.0 for Windows”.</li>
+          <li>Run the installer and follow the wizard.</li>
+          <li>Finish setup and restart your terminal/IDE.</li>
+          <li>Verify by launching your IDE and checking OpenCV paths.</li>
+        </ol>
+        <p style="margin:0; color:var(--muted)">Need Python, C++, or GPU acceleration? Explore the guides below.</p>
+      </div>
+    </section>
+
+    <section class="methods">
+      <div class="grid">
+        <div class="panel">
+          <h3><svg width="18" height="18" aria-hidden="true"><use href="#ic-windows"/></svg> Windows Installer</h3>
+          <p>Fastest way on Windows. No build required. Ideal for getting started quickly.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary js-download" href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe">
+              <svg width="18" height="18" aria-hidden="true"><use href="#ic-download"/></svg>
+              Download now
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/opencv/opencv/releases" target="_blank" rel="noopener">
+              <svg width="16" height="16" aria-hidden="true"><use href="#ic-external"/></svg>
+              All releases
+            </a>
+          </div>
+        </div>
+        <div class="panel">
+          <h3>Python (pip/conda)</h3>
+          <p>For Python users: virtual environments, pip vs conda, and contrib/headless packages.</p>
+          <ul>
+            <li><a href="/python.html">OpenCV on Windows with Python</a></li>
+            <li><a href="/quickstart.html">Windows Quickstart</a></li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>C++ & Visual Studio</h3>
+          <p>Set up Visual Studio, CMake presets, and library paths. Fix common DLL/runtime errors.</p>
+          <ul>
+            <li><a href="/cpp-visual-studio.html">C++ on Windows: Visual Studio Guide</a></li>
+            <li><a href="/troubleshooting.html">Troubleshooting</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="tiles" aria-label="Popular routes">
+      <div class="grid">
+        <div class="tile">
+          <div><svg width="22" height="22" aria-hidden="true"><use href="#ic-gpu"/></svg></div>
+          <div>
+            <h4>OpenCV with CUDA on Windows</h4>
+            <p>GPU acceleration, compatible drivers/toolkits, and how to verify performance.</p>
+            <p><a href="/cuda-gpu.html">Explore CUDA / GPU guide</a></p>
+          </div>
+        </div>
+        <div class="tile">
+          <div><svg width="22" height="22" aria-hidden="true"><use href="#ic-compare"/></svg></div>
+          <div>
+            <h4>pip vs conda vs source vs vcpkg</h4>
+            <p>Choose the right install route for your project. Pros/cons and maintenance tips.</p>
+            <p><a href="/install-methods.html">Compare install methods</a></p>
+          </div>
+        </div>
+        <div class="tile">
+          <div><svg width="22" height="22" aria-hidden="true"><use href="#ic-quick"/></svg></div>
+          <div>
+            <h4>Windows Quickstart</h4>
+            <p>Open camera, read images, and work with videos on Windows in minutes.</p>
+            <p><a href="/quickstart.html">Start now</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" aria-label="FAQ">
+      <h2 style="margin:0 0 12px">Frequently Asked Questions</h2>
+      <details>
+        <summary>Is OpenCV for Windows free?</summary>
+        <div>Yes, OpenCV is open-source (BSD license) and free to use on Windows.</div>
+      </details>
+      <details>
+        <summary>Does the installer work on Windows 11 and Windows 10?</summary>
+        <div>Yes, it supports Windows 11 and Windows 10 (64-bit). Restart your terminal/IDE after installation.</div>
+      </details>
+      <details>
+        <summary>Where is the official download?</summary>
+        <div>The official binary is hosted on GitHub Releases: <a href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" target="_blank" rel="noopener">opencv-4.12.0-windows.exe</a>.</div>
+      </details>
+      <details>
+        <summary>Need Python or C++ setup guides?</summary>
+        <div>See <a href="/python.html">Python guide</a> and <a href="/cpp-visual-studio.html">C++ Visual Studio guide</a>. For GPU, visit <a href="/cuda-gpu.html">CUDA/GPU</a>.</div>
+      </details>
+      <details>
+        <summary>Facing DLL or PATH errors?</summary>
+        <div>Check the <a href="/troubleshooting.html">Troubleshooting</a> page for quick fixes.</div>
+      </details>
+    </section>
+
+    <section class="related" aria-label="Related links">
+      <h2 style="margin:0 0 12px">Related pages</h2>
+      <ul>
+        <li><a href="/python.html">OpenCV on Windows with Python</a></li>
+        <li><a href="/cpp-visual-studio.html">OpenCV C++ on Windows: Visual Studio Setup Guide</a></li>
+        <li><a href="/cuda-gpu.html">OpenCV with CUDA on Windows: GPU Acceleration</a></li>
+        <li><a href="/troubleshooting.html">Fix OpenCV on Windows: DLL Errors, PATH, Camera Issues</a></li>
+        <li><a href="/install-methods.html">OpenCV for Windows: pip vs conda vs source vs vcpkg</a></li>
+        <li><a href="/quickstart.html">OpenCV Windows Quickstart: Camera, Images, and Video I/O</a></li>
+      </ul>
+    </section>
+
+  </main>
+
+  <footer class="wrap" role="contentinfo">
+    <div>Last modified: <span id="lastModifiedText">—</span></div>
+    <div style="margin-top:6px">© OpenCV for Windows — Unofficial helper site for the official OpenCV Windows installer. Not affiliated with OpenCV.</div>
+  </footer>
+
+  <!-- Cookie banner -->
+  <div class="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    <div><strong>Cookies & Analytics</strong></div>
+    <div style="color:var(--muted)">We use Google Analytics (GA4) to improve this site. You can accept or decline analytics storage. You may change your choice anytime.</div>
+    <div class="cookie-actions">
+      <button class="accept">Accept</button>
+      <button class="decline">Decline</button>
+      <button class="close" aria-label="Close banner">Close</button>
+    </div>
+  </div>
+
+  <!-- GA4 base tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PJKKMYVY7D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    // Consent mode default: denied until accepted
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied'
+    });
+    gtag('js', new Date());
+    gtag('config', 'G-PJKKMYVY7D', { anonymize_ip: true });
+  </script>
+
+  <script>
+    (function(){
+      // Update last-modified meta + footer
+      var lm = document.lastModified || new Date().toISOString();
+      try {
+        document.getElementById('lastModifiedMeta').setAttribute('content', lm);
+        document.getElementById('ogUpdatedTime').setAttribute('content', new Date(lm).toISOString());
+        document.getElementById('lastModifiedText').textContent = new Date(lm).toLocaleString();
+      } catch(e) {}
+
+      // Cookie banner logic
+      var banner = document.querySelector('.cookie-banner');
+      var accepted = localStorage.getItem('ga_consent');
+      function applyConsent(state){
+        if(state === 'granted') {
+          gtag('consent', 'update', { 'analytics_storage': 'granted' });
+        } else {
+          gtag('consent', 'update', { 'analytics_storage': 'denied' });
+        }
+      }
+      if(!accepted){ banner.classList.add('show'); }
+      else { applyConsent(accepted === 'yes' ? 'granted' : 'denied'); }
+
+      banner.querySelector('.accept').addEventListener('click', function(){
+        localStorage.setItem('ga_consent', 'yes');
+        applyConsent('granted');
+        banner.classList.remove('show');
+      });
+      banner.querySelector('.decline').addEventListener('click', function(){
+        localStorage.setItem('ga_consent', 'no');
+        applyConsent('denied');
+        banner.classList.remove('show');
+      });
+      banner.querySelector('.close').addEventListener('click', function(){
+        banner.classList.remove('show');
+      });
+
+      // Track file downloads on all direct download buttons
+      function trackDownload(el){
+        var url = el.getAttribute('data-file-url');
+        var label = el.getAttribute('data-file-label');
+        if(!url || !label) return;
+        gtag('event', 'file_download', {
+          event_category: 'downloads',
+          event_label: label,
+          file_url: url
+        });
+      }
+      document.querySelectorAll('.js-download').forEach(function(el){
+        el.addEventListener('click', function(){ trackDownload(el); });
+        el.addEventListener('auxclick', function(){ trackDownload(el); });
+        el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') trackDownload(el); });
+      });
+    })();
+  </script>
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "OpenCV for Windows",
+        "url": "https://opencv-windows.github.io/",
+        "inLanguage": "en",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://opencv-windows.github.io/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "name": "OpenCV for Windows: Download & Install (Windows 11/10)",
+        "url": "https://opencv-windows.github.io/",
+        "isPartOf": { "@id": "https://opencv-windows.github.io/" },
+        "inLanguage": "en",
+        "dateModified": "",
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://opencv-windows.github.io/"}
+          ]
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "OpenCV for Windows",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows 11; Windows 10 (64-bit)",
+        "softwareVersion": "4.12.0",
+        "downloadUrl": "https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe",
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+        "url": "https://opencv-windows.github.io/",
+        "screenshot": "https://opencv-windows.github.io/og-image.png",
+        "potentialAction": {
+          "@type": "InstallAction",
+          "target": "https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe"
+        },
+        "operatingSystemVersion": "Windows 10/11 x64"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Is OpenCV for Windows free?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Yes, OpenCV is open-source (BSD license) and free to use on Windows."}
+          },
+          {
+            "@type": "Question",
+            "name": "Does the installer work on Windows 11 and Windows 10?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Yes, it supports Windows 11 and Windows 10 (64-bit). Restart your terminal/IDE after installation."}
+          },
+          {
+            "@type": "Question",
+            "name": "Where is the official download?",
+            "acceptedAnswer": {"@type": "Answer", "text": "The official binary is hosted on GitHub Releases: opencv-4.12.0-windows.exe."}
+          },
+          {
+            "@type": "Question",
+            "name": "Need Python or C++ setup guides?",
+            "acceptedAnswer": {"@type": "Answer", "text": "See the Python and C++ Visual Studio guides. For GPU, visit the CUDA/GPU page."}
+          },
+          {
+            "@type": "Question",
+            "name": "Facing DLL or PATH errors?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Check the Troubleshooting page for quick fixes."}
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "name": "Install OpenCV on Windows via the official installer",
+        "inLanguage": "en",
+        "step": [
+          {"@type": "HowToStep", "name": "Download", "text": "Click the Download button to get opencv-4.12.0-windows.exe."},
+          {"@type": "HowToStep", "name": "Run", "text": "Run the installer and follow the on-screen wizard."},
+          {"@type": "HowToStep", "name": "Finish", "text": "Complete installation and restart your terminal/IDE."},
+          {"@type": "HowToStep", "name": "Verify", "text": "Open your IDE and ensure OpenCV binaries are accessible."}
+        ]
+      }
+    ]
+  }
+  </script>
+</body>
+</html>

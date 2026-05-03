@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenCV with CUDA on Windows: GPU Acceleration</title>
+  <meta name="description" content="Learn how to enable GPU acceleration for OpenCV on Windows 11/10. CUDA/cuDNN compatibility, build options, verification steps, and common pitfalls." />
+  <link rel="canonical" href="https://opencv-windows.github.io/cuda-gpu.html" />
+
+  <!-- Icons -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <!-- Open Graph / Twitter -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="OpenCV with CUDA on Windows: GPU Acceleration" />
+  <meta property="og:description" content="Enable CUDA for OpenCV on Windows. Understand driver/toolkit compatibility, how to get CUDA-enabled builds, and how to verify acceleration." />
+  <meta property="og:url" content="https://opencv-windows.github.io/cuda-gpu.html" />
+  <meta property="og:image" content="https://opencv-windows.github.io/og-image.png" />
+  <meta property="og:updated_time" content="" id="ogUpdatedTime" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="OpenCV with CUDA on Windows" />
+  <meta name="twitter:description" content="CUDA/cuDNN compatibility, build options, verification steps, and pitfalls." />
+  <meta name="twitter:image" content="https://opencv-windows.github.io/og-image.png" />
+
+  <!-- Last modified meta -->
+  <meta name="last-modified" content="" id="lastModifiedMeta" />
+  <meta name="theme-color" content="#0B1221" />
+
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
+
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --text: #0B1221;
+      --muted: #5A6373;
+      --surface: #F5F7FA;
+      --border: #E5EAF0;
+      --blue: #1E88E5;
+      --green: #43A047;
+      --red: #E53935;
+      --focus: #FFB300;
+      --shadow: rgba(11, 18, 33, 0.08);
+      --maxw: 1200px;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+      line-height: 1.5;
+    }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:focus-visible, button:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; border-radius: 6px; }
+
+    header { position: sticky; top: 0; z-index: 50; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: 0 4px 12px var(--shadow); }
+    .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 16px; }
+    .topbar { display: flex; align-items: center; gap: 16px; justify-content: space-between; padding: 12px 0; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .logo { width: 36px; height: 36px; }
+    .brand .title { font-weight: 700; font-size: 18px; }
+
+    nav ul { list-style: none; display: flex; flex-wrap: wrap; gap: 10px; margin: 0; padding: 0; }
+    nav a { display: inline-flex; alignments: center; gap: 8px; padding: 8px 10px; border-radius: 8px; }
+    nav a:hover { background: var(--surface); text-decoration: none; }
+
+    .hero { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 24px; padding: 28px 0; }
+    .hero .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px; box-shadow: 0 8px 24px var(--shadow); }
+    .hero h1 { margin: 0 0 10px; font-size: 28px; }
+    .hero p { margin: 0 0 14px; color: var(--muted); }
+
+    .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 0; }
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--border); font-weight: 600; cursor: pointer; transition: transform .05s ease-in-out, box-shadow .2s; text-decoration: none; }
+    .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); box-shadow: 0 6px 16px rgba(30,136,229,.18); }
+    .btn-primary:hover { transform: translateY(-1px); }
+    .btn-secondary { background: var(--bg); color: var(--text); }
+
+    .content { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; }
+    .section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 16px; }
+    .section h2 { margin: 0 0 10px; font-size: 22px; }
+    .section h3 { margin: 14px 0 8px; font-size: 18px; }
+    .section ul { margin: 0; padding-left: 18px; }
+    .tips li { margin: 6px 0; }
+
+    .faq details { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+    .faq summary { font-weight: 600; }
+    .faq details + details { margin-top: 10px; }
+
+    footer { margin-top: 36px; border-top: 1px solid var(--border); padding: 18px 0; color: var(--muted); }
+
+    /* Cookie banner */
+    .cookie-banner { position: fixed; bottom: 18px; right: 18px; z-index: 1000; max-width: 420px; background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 24px var(--shadow); padding: 14px; display: none; }
+    .cookie-banner.show { display: block; }
+    .cookie-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+    .cookie-banner button { padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border); cursor: pointer; }
+    .cookie-banner .accept { background: var(--green); color: #fff; border-color: var(--green); }
+    .cookie-banner .decline { background: var(--bg); color: var(--text); }
+    .cookie-banner .close { background: transparent; }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .hero { grid-template-columns: 1fr; }
+      .content { grid-template-columns: 1fr; }
+      nav ul { gap: 6px; }
+    }
+  </style>
+
+  <!-- SVG sprite -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="ic-opencv" viewBox="0 0 64 64" fill="none">
+      <circle cx="20" cy="20" r="12" fill="#E53935"/>
+      <circle cx="44" cy="20" r="12" fill="#1E88E5"/>
+      <circle cx="32" cy="42" r="12" fill="#43A047"/>
+    </symbol>
+    <symbol id="ic-download" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 3a1 1 0 0 1 1 1v9.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-5.364 5.364a1.5 1.5 0 0 1-2.121 0L5.293 11.707a1 1 0 1 1 1.414-1.414L10 13.586V4a1 1 0 0 1 1-1z"/>
+      <path d="M4 19a1 1 0 0 0 1 1h14a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1z"/>
+    </symbol>
+    <symbol id="ic-external" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M14 3h7v7h-2V6.414l-7.293 7.293-1.414-1.414L17.586 5H14V3z"/>
+      <path d="M19 19H5V5h7V3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8h-2v8z"/>
+    </symbol>
+    <symbol id="ic-python" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M7 2h6a5 5 0 0 1 5 5v3H9a3 3 0 0 1-3-3V2zM17 22H11a5 5 0 0 1-5-5v-3h9a3 3 0 0 1 3 3v5z"/>
+    </symbol>
+    <symbol id="ic-cpp" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2l9 5v10l-9 5-9-5V7l9-5zm-1 6a3 3 0 1 0 0 6h2v2h2V8h-4z"/>
+    </symbol>
+    <symbol id="ic-gpu" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 6h12a2 2 0 0 1 2 2v8h2v2h-2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm2 4h8v2H6v-2zm0 4h6v2H6v-2z"/>
+    </symbol>
+    <symbol id="ic-fix" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M21.7 7.3a1 1 0 0 1 0 1.4l-8.3 8.3a3 3 0 0 1-2.1.9H6v-5.3a3 3 0 0 1 .9-2.1l8.3-8.3a1 1 0 0 1 1.4 0l5.1 5.1zM7 18h3v-3H7v3z"/>
+    </symbol>
+    <symbol id="ic-compare" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/>
+    </symbol>
+    <symbol id="ic-quick" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5v5l4 2-1 1-5-3V7h2z"/>
+    </symbol>
+    <symbol id="ic-windows" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M3 5l9-2v8H3V5zm9 9H3v7l9-2v-5zm1-11l8-2v10h-8V3zm8 11h-8v7l8-2v-5z"/>
+    </symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/>
+    </symbol>
+  </svg>
+</head>
+<body>
+  <header>
+    <div class="wrap topbar" role="navigation" aria-label="Main">
+      <a href="/" class="brand" aria-label="OpenCV for Windows">
+        <svg class="logo" aria-hidden="true"><use href="#ic-opencv" /></svg>
+        <span class="title">OpenCV for Windows</span>
+      </a>
+      <nav>
+        <ul>
+          <li><a href="/python.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-python"/></svg> Python</a></li>
+          <li><a href="/cpp-visual-studio.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-cpp"/></svg> C++ & Visual Studio</a></li>
+          <li><a href="/cuda-gpu.html" aria-current="page"><svg width="18" height="18" aria-hidden="true"><use href="#ic-gpu"/></svg> CUDA / GPU</a></li>
+          <li><a href="/troubleshooting.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-fix"/></svg> Troubleshooting</a></li>
+          <li><a href="/install-methods.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-compare"/></svg> Install Methods</a></li>
+          <li><a href="/quickstart.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-quick"/></svg> Quickstart</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-labelledby="h1">
+      <div class="card">
+        <h1 id="h1">OpenCV with CUDA on Windows: GPU Acceleration</h1>
+        <p>Enable GPU acceleration for OpenCV on Windows 11/10. Understand CUDA/cuDNN compatibility, where to get CUDA-enabled builds, how to verify acceleration, and how to avoid common pitfalls.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary js-download" href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" rel="noopener" target="_blank" aria-label="Download OpenCV 4.12.0 for Windows">
+            <svg width="20" height="20" aria-hidden="true"><use href="#ic-download"/></svg>
+            Download OpenCV 4.12.0 for Windows
+          </a>
+          <a class="btn btn-secondary" href="/install-methods.html" aria-label="Install method comparison">Install Methods</a>
+          <a class="btn btn-secondary" href="/troubleshooting.html" aria-label="Troubleshooting GPU issues on Windows">Troubleshooting</a>
+        </div>
+        <ul style="margin: 14px 0 0; padding-left: 18px; color: var(--muted)">
+          <li>Hardware: NVIDIA GPU with recent driver</li>
+          <li>Software: Matching CUDA Toolkit and optional cuDNN</li>
+          <li>Note: The official Windows installer is typically CPU-only; CUDA requires a CUDA-enabled build</li>
+        </ul>
+      </div>
+      <div class="card" aria-label="TL;DR for CUDA">
+        <h2 style="margin:0 0 10px">TL;DR — GPU quick steps</h2>
+        <ol style="margin:0 0 8px; padding-left: 18px">
+          <li>Check driver and select a compatible CUDA Toolkit version.</li>
+          <li>Get a CUDA-enabled OpenCV build (prebuilt or build from source).</li>
+          <li>Install cuDNN if your modules require it.</li>
+          <li>Verify that OpenCV detects your CUDA device.</li>
+        </ol>
+        <p style="margin:0; color:var(--muted)">Need Python or C++ specifics? See <a href="/python.html">Python</a> and <a href="/cpp-visual-studio.html">C++</a> pages.</p>
+      </div>
+    </section>
+
+    <section class="content" aria-label="CUDA setup details">
+      <div class="section">
+        <h2>Compatibility: drivers, CUDA Toolkit, and cuDNN</h2>
+        <ul class="tips">
+          <li>Use an NVIDIA driver version that supports your chosen CUDA Toolkit.</li>
+          <li>Align the CUDA Toolkit with the OpenCV CUDA build you plan to use.</li>
+          <li>Install cuDNN only if your workflows require deep neural network modules.</li>
+        </ul>
+
+        <h2 style="margin-top:16px">Ways to obtain CUDA-enabled OpenCV</h2>
+        <ul class="tips">
+          <li><strong>Prebuilt community builds</strong>: convenient but verify trust and version alignment.</li>
+          <li><strong>Build from source</strong>: maximum control over CUDA flags and dependencies; ensure MSVC, CMake, CUDA, and OpenCV sources align.</li>
+          <li><strong>Package managers</strong>: some provide CUDA variants; check availability and compatibility on Windows.</li>
+        </ul>
+
+        <h2 style="margin-top:16px">Verification checklist</h2>
+        <ul class="tips">
+          <li>Confirm that the build reports CUDA support enabled.</li>
+          <li>Ensure at least one CUDA device is detected on your system.</li>
+          <li>Run a simple GPU-accelerated operation and compare timings with CPU.</li>
+        </ul>
+
+        <h2 style="margin-top:16px">Common pitfalls</h2>
+        <ul class="tips">
+          <li><strong>Version mismatch</strong>: driver, CUDA Toolkit, and OpenCV build must be compatible.</li>
+          <li><strong>Missing DLLs</strong>: ensure CUDA/cuDNN runtime libraries are discoverable at run time.</li>
+          <li><strong>Multiple toolchains</strong>: avoid mixing MSVC versions across dependencies.</li>
+          <li><strong>x86 vs x64</strong>: use x64 throughout the toolchain and libraries.</li>
+        </ul>
+      </div>
+      <aside class="section" aria-label="Shortcuts and links">
+        <h2>Useful links</h2>
+        <ul>
+          <li><a href="/install-methods.html">Install methods comparison</a></li>
+          <li><a href="/troubleshooting.html">Troubleshooting guide</a></li>
+          <li><a href="/quickstart.html">Windows Quickstart</a></li>
+          <li><a href="/cpp-visual-studio.html">C++ Visual Studio guide</a></li>
+          <li><a href="/python.html">Python guide</a></li>
+          <li><a href="https://github.com/opencv/opencv/releases" target="_blank" rel="noopener">OpenCV GitHub Releases</a></li>
+        </ul>
+        <div class="section" style="margin-top:14px">
+          <h3 style="margin:0 0 8px">Get the Windows installer (baseline)</h3>
+          <a class="btn btn-primary js-download" href="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe">
+            <svg width="18" height="18" aria-hidden="true"><use href="#ic-download"/></svg>
+            Download .exe
+          </a>
+        </div>
+      </aside>
+    </section>
+
+    <section class="section" style="margin-top:18px" aria-label="FAQ">
+      <h2>CUDA / GPU FAQ on Windows</h2>
+      <div class="faq">
+        <details>
+          <summary>Does the official Windows installer include CUDA?</summary>
+          <div>Typically no. The official installer targets CPU builds. For GPU, use a CUDA-enabled build of OpenCV (prebuilt from a trusted source or build from source).</div>
+        </details>
+        <details>
+          <summary>Which CUDA Toolkit version should I install?</summary>
+          <div>Pick a version supported by your NVIDIA driver and by the CUDA-enabled OpenCV build you plan to use. Keep versions aligned.</div>
+        </details>
+        <details>
+          <summary>Do I need cuDNN?</summary>
+          <div>Only if you plan to use deep neural network modules that benefit from cuDNN. Otherwise, it is optional.</div>
+        </details>
+        <details>
+          <summary>How do I verify that CUDA works?</summary>
+          <div>Check that your OpenCV build reports CUDA enabled and that at least one GPU device is detected. Then benchmark a GPU operation against CPU.</div>
+        </details>
+      </div>
+    </section>
+
+    <section class="section" style="margin-top:18px" aria-label="Related">
+      <h2>Related pages</h2>
+      <ul>
+        <li><a href="/install-methods.html">OpenCV for Windows: pip vs conda vs source vs vcpkg</a></li>
+        <li><a href="/troubleshooting.html">Fix OpenCV on Windows: DLL Errors, PATH, Camera Issues</a></li>
+        <li><a href="/quickstart.html">OpenCV Windows Quickstart: Camera, Images, and Video I/O</a></li>
+        <li><a href="/cpp-visual-studio.html">OpenCV C++ on Windows: Visual Studio Setup Guide</a></li>
+        <li><a href="/python.html">OpenCV on Windows with Python</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="wrap" role="contentinfo">
+    <div>Last modified: <span id="lastModifiedText">—</span></div>
+    <div style="margin-top:6px">© OpenCV for Windows — Unofficial helper site for the official OpenCV Windows installer. Not affiliated with OpenCV.</div>
+  </footer>
+
+  <!-- Cookie banner -->
+  <div class="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
+    <div><strong>Cookies & Analytics</strong></div>
+    <div style="color:var(--muted)">We use Google Analytics (GA4) to improve this site. You can accept or decline analytics storage. You may change your choice anytime.</div>
+    <div class="cookie-actions">
+      <button class="accept">Accept</button>
+      <button class="decline">Decline</button>
+      <button class="close" aria-label="Close banner">Close</button>
+    </div>
+  </div>
+
+  <!-- GA4 base tag -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PJKKMYVY7D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);} 
+    // Consent mode default: denied until accepted
+    gtag('consent', 'default', {
+      'analytics_storage': 'denied',
+      'ad_storage': 'denied',
+      'ad_user_data': 'denied',
+      'ad_personalization': 'denied'
+    });
+    gtag('js', new Date());
+    gtag('config', 'G-PJKKMYVY7D', { anonymize_ip: true });
+  </script>
+
+  <script>
+    (function(){
+      // Update last-modified meta + footer
+      var lm = document.lastModified || new Date().toISOString();
+      try {
+        document.getElementById('lastModifiedMeta').setAttribute('content', lm);
+        document.getElementById('ogUpdatedTime').setAttribute('content', new Date(lm).toISOString());
+        document.getElementById('lastModifiedText').textContent = new Date(lm).toLocaleString();
+      } catch(e) {}
+
+      // Cookie banner logic
+      var banner = document.querySelector('.cookie-banner');
+      var accepted = localStorage.getItem('ga_consent');
+      function applyConsent(state){
+        if(state === 'granted') {
+          gtag('consent', 'update', { 'analytics_storage': 'granted' });
+        } else {
+          gtag('consent', 'update', { 'analytics_storage': 'denied' });
+        }
+      }
+      if(!accepted){ banner.classList.add('show'); }
+      else { applyConsent(accepted === 'yes' ? 'granted' : 'denied'); }
+
+      banner.querySelector('.accept').addEventListener('click', function(){
+        localStorage.setItem('ga_consent', 'yes');
+        applyConsent('granted');
+        banner.classList.remove('show');
+      });
+      banner.querySelector('.decline').addEventListener('click', function(){
+        localStorage.setItem('ga_consent', 'no');
+        applyConsent('denied');
+        banner.classList.remove('show');
+      });
+      banner.querySelector('.close').addEventListener('click', function(){
+        banner.classList.remove('show');
+      });
+
+      // Track file downloads on all direct download buttons
+      function trackDownload(el){
+        var url = el.getAttribute('data-file-url');
+        var label = el.getAttribute('data-file-label');
+        if(!url || !label) return;
+        gtag('event', 'file_download', {
+          event_category: 'downloads',
+          event_label: label,
+          file_url: url
+        });
+      }
+      document.querySelectorAll('.js-download').forEach(function(el){
+        el.addEventListener('click', function(){ trackDownload(el); });
+        el.addEventListener('auxclick', function(){ trackDownload(el); });
+        el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') trackDownload(el); });
+      });
+    })();
+  </script>
+
+  <!-- Schema.org JSON-LD -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "name": "OpenCV for Windows",
+        "url": "https://opencv-windows.github.io/",
+        "inLanguage": "en",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://opencv-windows.github.io/?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      },
+      {
+        "@type": "WebPage",
+        "name": "OpenCV with CUDA on Windows: GPU Acceleration",
+        "url": "https://opencv-windows.github.io/cuda-gpu.html",
+        "isPartOf": { "@id": "https://opencv-windows.github.io/" },
+        "inLanguage": "en",
+        "dateModified": "",
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://opencv-windows.github.io/"},
+            {"@type": "ListItem", "position": 2, "name": "CUDA / GPU", "item": "https://opencv-windows.github.io/cuda-gpu.html"}
+          ]
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "OpenCV for Windows",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows 11; Windows 10 (64-bit)",
+        "softwareVersion": "4.12.0",
+        "downloadUrl": "https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe",
+        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+        "url": "https://opencv-windows.github.io/cuda-gpu.html",
+        "screenshot": "https://opencv-windows.github.io/og-image.png",
+        "potentialAction": {
+          "@type": "InstallAction",
+          "target": "https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe"
+        },
+        "operatingSystemVersion": "Windows 10/11 x64"
+      },
+      {
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does the official Windows installer include CUDA?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Typically no. For GPU, use a CUDA-enabled build of OpenCV (prebuilt from a trusted source or build from source)."}
+          },
+          {
+            "@type": "Question",
+            "name": "Which CUDA Toolkit version should I install?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Select a Toolkit version supported by your NVIDIA driver and the CUDA-enabled OpenCV build you plan to use."}
+          },
+          {
+            "@type": "Question",
+            "name": "Do I need cuDNN?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Only if your workloads use deep neural network modules that benefit from cuDNN acceleration."}
+          },
+          {
+            "@type": "Question",
+            "name": "How do I verify that CUDA works?",
+            "acceptedAnswer": {"@type": "Answer", "text": "Confirm that your OpenCV build reports CUDA enabled and that at least one GPU device is detected, then benchmark a GPU operation vs CPU."}
+          }
+        ]
+      },
+      {
+        "@type": "HowTo",
+        "name": "Enable OpenCV CUDA on Windows",
+        "inLanguage": "en",
+        "step": [
+          {"@type": "HowToStep", "name": "Align versions", "text": "Ensure NVIDIA driver, CUDA Toolkit, and the OpenCV CUDA build are compatible on Windows 11/10 x64."},
+          {"@type": "HowToStep", "name": "Install dependencies", "text": "Install the selected CUDA Toolkit; add cuDNN if your modules require it."},
+          {"@type": "HowToStep", "name": "Get CUDA-enabled OpenCV", "text": "Use a trusted prebuilt CUDA-enabled OpenCV or build from source with CUDA flags."},
+          {"@type": "HowToStep", "name": "Verify GPU", "text": "Confirm that the OpenCV build reports CUDA support and detects your GPU device."}
+        ]
+      }
+    ]
+  }
+  </script>
+</body>
+</html>

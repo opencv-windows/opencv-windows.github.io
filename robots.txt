@@ -1,0 +1,1 @@
+{"text_string":"# robots.txt for https://opencv-windows.github.io/\n# Last updated: 2026-05-03\n\nUser-agent: *\nAllow: /\n\nSitemap: https://opencv-windows.github.io/sitemap.xml\n"}
