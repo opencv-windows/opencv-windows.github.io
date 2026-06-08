@@ -1,457 +1,72 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>OpenCV for Windows: pip vs conda vs source vs vcpkg</title>
-  <meta name="description" content="Choose the best way to install OpenCV 4.12.0 on Windows: pip, conda, build from source, or vcpkg. Pros and cons, when to use each, and practical recommendations." />
-  <link rel="canonical" href="https://opencv-windows.github.io/install-methods.html" />
-
-  <!-- Icons -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-
-  <!-- Open Graph / Twitter -->
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="OpenCV for Windows: pip vs conda vs source vs vcpkg" />
-  <meta property="og:description" content="Compare Windows install methods for OpenCV: pip, conda, source build, and vcpkg. Learn which one fits your workflow." />
-  <meta property="og:url" content="https://opencv-windows.github.io/install-methods.html" />
-  <meta property="og:image" content="https://opencv-windows.github.io/og-image.png" />
-  <meta property="og:updated_time" content="" id="ogUpdatedTime" />
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="OpenCV for Windows: Install Methods" />
-  <meta name="twitter:description" content="pip vs conda vs source vs vcpkg on Windows. Pros, cons, and recommendations." />
-  <meta name="twitter:image" content="https://opencv-windows.github.io/og-image.png" />
-
-  <!-- Last modified meta -->
-  <meta name="last-modified" content="" id="lastModifiedMeta" />
-  <meta name="theme-color" content="#0B1221" />
-
-  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin />
-
-  <style>
-    :root { --bg:#FFFFFF; --text:#0B1221; --muted:#5A6373; --surface:#F5F7FA; --border:#E5EAF0; --blue:#1E88E5; --green:#43A047; --red:#E53935; --focus:#FFB300; --shadow:rgba(11,18,33,.08); --maxw:1200px; }
-    *{ box-sizing: border-box; } html, body{ height:100%; }
-    body{ margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif; line-height:1.5; }
-    a{ color:var(--blue); text-decoration:none; } a:hover{ text-decoration:underline; }
-    a:focus-visible, button:focus-visible{ outline:3px solid var(--focus); outline-offset:2px; border-radius:6px; }
-
-    header{ position:sticky; top:0; z-index:50; background:var(--bg); border-bottom:1px solid var(--border); box-shadow:0 4px 12px var(--shadow); }
-    .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 16px; }
-    .topbar{ display:flex; align-items:center; gap:16px; justify-content:space-between; padding:12px 0; }
-    .brand{ display:flex; align-items:center; gap:12px; }
-    .brand .logo{ width:36px; height:36px; }
-    .brand .title{ font-weight:700; font-size:18px; }
-
-    nav ul{ list-style:none; display:flex; flex-wrap:wrap; gap:10px; margin:0; padding:0; }
-    nav a{ display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; }
-    nav a:hover{ background:var(--surface); text-decoration:none; }
-
-    .hero{ display:grid; grid-template-columns:1.2fr .8fr; gap:24px; padding:28px 0; }
-    .card{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:18px; box-shadow:0 8px 24px var(--shadow); }
-    .hero h1{ margin:0 0 10px; font-size:28px; }
-    .hero p{ margin:0 0 14px; color:var(--muted); }
-
-    .cta-row{ display:flex; flex-wrap:wrap; gap:12px; margin:12px 0 0; }
-    .btn{ display:inline-flex; align-items:center; gap:10px; padding:12px 16px; border-radius:12px; border:1px solid var(--border); font-weight:600; cursor:pointer; transition:transform .05s, box-shadow .2s; text-decoration:none; }
-    .btn-primary{ background:var(--blue); color:#fff; border-color:var(--blue); box-shadow:0 6px 16px rgba(30,136,229,.18); }
-    .btn-primary:hover{ transform:translateY(-1px); }
-    .btn-secondary{ background:var(--bg); color:var(--text); }
-
-    .content{ display:grid; grid-template-columns:2fr 1fr; gap:18px; }
-    .section{ background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:16px; }
-    .section h2{ margin:0 0 10px; font-size:22px; }
-    .section h3{ margin:14px 0 8px; font-size:18px; }
-    .section ul{ margin:0; padding-left:18px; }
-    .tips li{ margin:6px 0; }
-
-    .grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
-    .panel{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; }
-    .panel h3{ margin:0 0 6px; font-size:18px; }
-    .panel ul{ margin:0; padding-left:18px; }
-
-    .faq details{ background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; }
-    .faq summary{ font-weight:600; }
-    .faq details + details{ margin-top:10px; }
-
-    footer{ margin-top:36px; border-top:1px solid var(--border); padding:18px 0; color:var(--muted); }
-
-    /* Cookie banner */
-    .cookie-banner{ position:fixed; bottom:18px; right:18px; z-index:1000; max-width:420px; background:var(--surface); border:1px solid var(--border); border-radius:12px; box-shadow:0 8px 24px var(--shadow); padding:14px; display:none; }
-    .cookie-banner.show{ display:block; }
-    .cookie-actions{ display:flex; gap:10px; margin-top:10px; flex-wrap:wrap; }
-    .cookie-banner button{ padding:8px 12px; border-radius:10px; border:1px solid var(--border); cursor:pointer; }
-    .cookie-banner .accept{ background:var(--green); color:#fff; border-color:var(--green); }
-    .cookie-banner .decline{ background:var(--bg); color:var(--text); }
-    .cookie-banner .close{ background:transparent; }
-
-    /* Responsive */
-    @media (max-width:1024px){ .hero{ grid-template-columns:1fr; } .content{ grid-template-columns:1fr; } .grid{ grid-template-columns:1fr; } nav ul{ gap:6px; } }
-  </style>
-
-  <!-- SVG sprite -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
-    <symbol id="ic-opencv" viewBox="0 0 64 64" fill="none">
-      <circle cx="20" cy="20" r="12" fill="#E53935"/>
-      <circle cx="44" cy="20" r="12" fill="#1E88E5"/>
-      <circle cx="32" cy="42" r="12" fill="#43A047"/>
-    </symbol>
-    <symbol id="ic-download" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 3a1 1 0 0 1 1 1v9.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-5.364 5.364a1.5 1.5 0 0 1-2.121 0L5.293 11.707a1 1 0 1 1 1.414-1.414L10 13.586V4a1 1 0 0 1 1-1z"/>
-      <path d="M4 19a1 1 0 0 0 1 1h14a1 1 0 1 0 0-2H5a1 1 0 0 0-1 1z"/>
-    </symbol>
-    <symbol id="ic-external" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M14 3h7v7h-2V6.414l-7.293 7.293-1.414-1.414L17.586 5H14V3z"/>
-      <path d="M19 19H5V5h7V3H4a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-8h-2v8z"/>
-    </symbol>
-    <symbol id="ic-python" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M7 2h6a5 5 0 0 1 5 5v3H9a3 3 0 0 1-3-3V2zM17 22H11a5 5 0 0 1-5-5v-3h9a3 3 0 0 1 3 3v5z"/>
-    </symbol>
-    <symbol id="ic-cpp" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2l9 5v10l-9 5-9-5V7l9-5zm-1 6a3 3 0 1 0 0 6h2v2h2V8h-4z"/>
-    </symbol>
-    <symbol id="ic-gpu" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M4 6h12a2 2 0 0 1 2 2v8h2v2h-2a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2zm2 4h8v2H6v-2zm0 4h6v2H6v-2z"/>
-    </symbol>
-    <symbol id="ic-fix" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M21.7 7.3a1 1 0 0 1 0 1.4l-8.3 8.3a3 3 0 0 1-2.1.9H6v-5.3a3 3 0 0 1 .9-2.1l8.3-8.3a1 1 0 0 1 1.4 0l5.1 5.1zM7 18h3v-3H7v3z"/>
-    </symbol>
-    <symbol id="ic-compare" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M4 4h7v7H4V4zm9 0h7v7h-7V4zM4 13h7v7H4v-7zm9 0h7v7h-7v-7z"/>
-    </symbol>
-    <symbol id="ic-quick" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5v5l4 2-1 1-5-3V7h2z"/>
-    </symbol>
-    <symbol id="ic-windows" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M3 5l9-2v8H3V5zm9 9H3v7l9-2v-5zm1-11l8-2v10h-8V3zm8 11h-8v7l8-2v-5z"/>
-    </symbol>
-  </svg>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>OpenCV Windows Install Methods — pip vs conda vs Source vs vcpkg</title>
+  <meta name="description" content="Compare OpenCV installation methods on Windows: pip, conda, build from source and vcpkg. Pros, cons, CUDA support and which method to choose.">
+  <link rel="canonical" href="https://opencv-windows.github.io/install-methods.html">
+  <meta name="last-modified" content="2026-06-08">
+  <meta property="og:title" content="OpenCV Windows Install Methods — pip vs conda vs Source vs vcpkg">
+  <meta property="og:description" content="Compare OpenCV installation methods on Windows: pip, conda, build from source and vcpkg. Pros, cons, CUDA support and which method to choose.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://opencv-windows.github.io/install-methods.html">
+  <meta property="og:image" content="https://opencv-windows.github.io/og-image.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header>
-    <div class="wrap topbar" role="navigation" aria-label="Main">
-      <a href="/" class="brand" aria-label="OpenCV for Windows">
-        <svg class="logo" aria-hidden="true"><use href="#ic-opencv" /></svg>
-        <span class="title">OpenCV for Windows</span>
-      </a>
-      <nav>
-        <ul>
-          <li><a href="/python.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-python"/></svg> Python</a></li>
-          <li><a href="/cpp-visual-studio.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-cpp"/></svg> C++ & Visual Studio</a></li>
-          <li><a href="/cuda-gpu.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-gpu"/></svg> CUDA / GPU</a></li>
-          <li><a href="/troubleshooting.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-fix"/></svg> Troubleshooting</a></li>
-          <li><a href="/install-methods.html" aria-current="page"><svg width="18" height="18" aria-hidden="true"><use href="#ic-compare"/></svg> Install Methods</a></li>
-          <li><a href="/quickstart.html"><svg width="18" height="18" aria-hidden="true"><use href="#ic-quick"/></svg> Quickstart</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-
-  <main class="wrap">
-    <section class="hero" aria-labelledby="h1">
-      <div class="card">
-        <h1 id="h1">OpenCV for Windows: pip vs conda vs source vs vcpkg</h1>
-        <p>There are multiple ways to install OpenCV on Windows 11/10. This page compares pip wheels, conda environments, building from source, and using vcpkg, so you can choose what fits your stack.</p>
-        <div class="cta-row">
-          <a class="btn btn-primary js-download" href="https://www2.softwareportal.store/eTpBfZVt" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe" rel="noopener" target="_blank" aria-label="Download OpenCV 4.12.0 for Windows">
-            Download OpenCV 4.12.0 for Windows
-          </a>
-          <a class="btn btn-secondary" href="/python.html">Python Guide</a>
-          <a class="btn btn-secondary" href="/cpp-visual-studio.html">C++ Guide</a>
-        </div>
-      </div>
-      <div class="card" aria-label="Summary">
-        <h2 style="margin:0 0 10px">TL;DR — Which method should you pick?</h2>
-        <ul>
-          <li>Python-first users → pip (opencv-python / -contrib / -headless) inside a virtual environment.</li>
-          <li>Data science stacks → conda envs (manage Python + native deps together).</li>
-          <li>Full control / CUDA / custom flags → build from source.</li>
-          <li>C++ dependency management → vcpkg for consistent MSVC integration.</li>
-        </ul>
-      </div>
-    </section>
-
-    <section class="content" aria-label="Method comparison">
-      <div class="section">
-        <h2>pip (PyPI wheels)</h2>
-        <div class="grid">
-          <div class="panel">
-            <h3>Pros</h3>
-            <ul>
-              <li>Fastest to get started on Windows.</li>
-              <li>Works well with virtual environments (venv/conda).</li>
-              <li>Variants available: standard, contrib, headless.</li>
-            </ul>
-          </div>
-          <div class="panel">
-            <h3>Cons</h3>
-            <ul>
-              <li>Limited custom build options.</li>
-              <li>GPU/CUDA support typically not included.</li>
-              <li>Potential conflicts with system-wide Python if not isolated.</li>
-            </ul>
-          </div>
-        </div>
-
-        <h2 style="margin-top:16px">conda (Anaconda/Miniconda)</h2>
-        <div class="grid">
-          <div class="panel">
-            <h3>Pros</h3>
-            <ul>
-              <li>Manages Python and native dependencies together.</li>
-              <li>Granular environment control and reproducibility.</li>
-              <li>Good for data science stacks with many packages.</li>
-            </ul>
-          </div>
-          <div class="panel">
-            <h3>Cons</h3>
-            <ul>
-              <li>Larger footprint than pip-only setups.</li>
-              <li>Package availability/versioning may lag or vary by channel.</li>
-              <li>Mixing pip and conda requires care to avoid conflicts.</li>
-            </ul>
-          </div>
-        </div>
-
-        <h2 style="margin-top:16px">Build from source (CMake + MSVC)</h2>
-        <div class="grid">
-          <div class="panel">
-            <h3>Pros</h3>
-            <ul>
-              <li>Maximum control: enable/disable modules, set flags, target CUDA.</li>
-              <li>Optimizations for your CPU/GPU and use case.</li>
-              <li>Ability to patch or track latest source.</li>
-            </ul>
-          </div>
-          <div class="panel">
-            <h3>Cons</h3>
-            <ul>
-              <li>Time-consuming; requires CMake, MSVC, and dependency alignment.</li>
-              <li>Maintenance overhead for updates and rebuilds.</li>
-              <li>Higher chance of version/runtime mismatches.</li>
-            </ul>
-          </div>
-        </div>
-
-        <h2 style="margin-top:16px">vcpkg (C++ package manager)</h2>
-        <div class="grid">
-          <div class="panel">
-            <h3>Pros</h3>
-            <ul>
-              <li>Simplifies C++ dependency management on Windows.</li>
-              <li>Good MSVC/Visual Studio integration.</li>
-              <li>Helps keep versions consistent across projects.</li>
-            </ul>
-          </div>
-          <div class="panel">
-            <h3>Cons</h3>
-            <ul>
-              <li>Learning curve for manifests and triplets.</li>
-              <li>Availability of certain variants (e.g., CUDA) may vary.</li>
-              <li>Build times if binaries must be compiled locally.</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <aside class="section" aria-label="Recommendations">
-        <h2>Recommendations by use case</h2>
-        <ul class="tips">
-          <li><strong>Beginner with Python</strong>: use pip with a fresh venv; start with standard wheels.</li>
-          <li><strong>Data science team</strong>: conda environments for consistent stacks across machines.</li>
-          <li><strong>High-performance / CUDA</strong>: consider building from source with CUDA flags or acquiring a CUDA-enabled build.</li>
-          <li><strong>C++ app</strong>: vcpkg for dependency management and Visual Studio integration.</li>
-        </ul>
-        <div class="section" style="margin-top:14px">
-          <h3 style="margin:0 0 8px">Get the Windows installer</h3>
-          <a class="btn btn-primary js-download" href="https://www2.softwareportal.store/eTpBfZVt" data-file-label="opencv-4.12.0-windows.exe" data-file-url="https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe">
-            Download .exe
-          </a>
-          <p style="margin:10px 0 0; color:var(--muted)">This provides prebuilt binaries for Windows; ideal baseline for C++ setups.</p>
-        </div>
-        <h2 style="margin-top:16px">Related pages</h2>
-        <ul>
-          <li><a href="/python.html">OpenCV on Windows with Python</a></li>
-          <li><a href="/cpp-visual-studio.html">C++ Visual Studio guide</a></li>
-          <li><a href="/cuda-gpu.html">CUDA / GPU guide</a></li>
-          <li><a href="/troubleshooting.html">Troubleshooting</a></li>
-          <li><a href="/quickstart.html">Windows Quickstart</a></li>
-          <li><a href="https://github.com/opencv/opencv/releases" target="_blank" rel="noopener">OpenCV GitHub Releases</a></li>
-        </ul>
-      </aside>
-    </section>
-
-    <section class="section" style="margin-top:18px" aria-label="FAQ">
-      <h2>Install methods FAQ</h2>
-      <div class="faq">
-        <details>
-          <summary>Is pip or conda better for OpenCV on Windows?</summary>
-          <div>For lightweight Python projects and quick installs, pip in a virtual environment is ideal. For data science stacks with many native dependencies, conda offers more holistic environment control.</div>
-        </details>
-        <details>
-          <summary>Do I need to build from source?</summary>
-          <div>No for most users. Build from source when you need specific flags, custom modules, or CUDA-enabled builds.</div>
-        </details>
-        <details>
-          <summary>When should I use vcpkg?</summary>
-          <div>Use vcpkg if you maintain C++ projects in Visual Studio and want consistent dependency management across machines and CI.</div>
-        </details>
-        <details>
-          <summary>Does the official Windows installer include CUDA?</summary>
-          <div>Typically no; it targets CPU builds. For GPU acceleration, use a CUDA-enabled build or build from source with CUDA flags.</div>
-        </details>
-      </div>
-    </section>
-  </main>
-
-  <footer class="wrap" role="contentinfo">
-    <div>Last modified: <span id="lastModifiedText">—</span></div>
-    <div style="margin-top:6px">© OpenCV for Windows — Unofficial helper site for the official OpenCV Windows installer. Not affiliated with OpenCV.</div>
-  </footer>
-
-  <!-- Cookie banner -->
-  <div class="cookie-banner" role="dialog" aria-live="polite" aria-label="Cookie consent">
-    <div><strong>Cookies & Analytics</strong></div>
-    <div style="color:var(--muted)">We use Google Analytics (GA4) to improve this site. You can accept or decline analytics storage. You may change your choice anytime.</div>
-    <div class="cookie-actions">
-      <button class="accept">Accept</button>
-      <button class="decline">Decline</button>
-      <button class="close" aria-label="Close banner">Close</button>
-    </div>
-  </div>
-
-  <!-- GA4 base tag -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PJKKMYVY7D"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);} 
-    // Consent mode default: denied until accepted
-    gtag('consent', 'default', {
-      'analytics_storage': 'denied',
-      'ad_storage': 'denied',
-      'ad_user_data': 'denied',
-      'ad_personalization': 'denied'
-    });
-    gtag('js', new Date());
-    gtag('config', 'G-PJKKMYVY7D', { anonymize_ip: true });
-  </script>
-
-  <script>
-    (function(){
-      // Update last-modified meta + footer
-      var lm = document.lastModified || new Date().toISOString();
-      try {
-        document.getElementById('lastModifiedMeta').setAttribute('content', lm);
-        document.getElementById('ogUpdatedTime').setAttribute('content', new Date(lm).toISOString());
-        document.getElementById('lastModifiedText').textContent = new Date(lm).toLocaleString();
-      } catch(e) {}
-
-      // Cookie banner logic
-      var banner = document.querySelector('.cookie-banner');
-      var accepted = localStorage.getItem('ga_consent');
-      function applyConsent(state){
-        if(state === 'granted') {
-          gtag('consent', 'update', { 'analytics_storage': 'granted' });
-        } else {
-          gtag('consent', 'update', { 'analytics_storage': 'denied' });
-        }
-      }
-      if(!accepted){ banner.classList.add('show'); }
-      else { applyConsent(accepted === 'yes' ? 'granted' : 'denied'); }
-
-      banner.querySelector('.accept').addEventListener('click', function(){
-        localStorage.setItem('ga_consent', 'yes');
-        applyConsent('granted');
-        banner.classList.remove('show');
-      });
-      banner.querySelector('.decline').addEventListener('click', function(){
-        localStorage.setItem('ga_consent', 'no');
-        applyConsent('denied');
-        banner.classList.remove('show');
-      });
-      banner.querySelector('.close').addEventListener('click', function(){
-        banner.classList.remove('show');
-      });
-
-      // Track file downloads on all direct download buttons
-      function trackDownload(el){
-        var url = el.getAttribute('data-file-url');
-        var label = el.getAttribute('data-file-label');
-        if(!url || !label) return;
-        gtag('event', 'file_download', {
-          event_category: 'downloads',
-          event_label: label,
-          file_url: url
-        });
-      }
-      document.querySelectorAll('.js-download').forEach(function(el){
-        el.addEventListener('click', function(){ trackDownload(el); });
-        el.addEventListener('auxclick', function(){ trackDownload(el); });
-        el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' ') trackDownload(el); });
-      });
-    })();
-  </script>
-
-  <!-- Schema.org JSON-LD -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "name": "OpenCV for Windows",
-        "url": "https://opencv-windows.github.io/",
-        "inLanguage": "en",
-        "potentialAction": {
-          "@type": "SearchAction",
-          "target": "https://opencv-windows.github.io/?q={search_term_string}",
-          "query-input": "required name=search_term_string"
-        }
-      },
-      {
-        "@type": "WebPage",
-        "name": "OpenCV for Windows: pip vs conda vs source vs vcpkg",
-        "url": "https://opencv-windows.github.io/install-methods.html",
-        "isPartOf": { "@id": "https://opencv-windows.github.io/" },
-        "inLanguage": "en",
-        "dateModified": "",
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "Home", "item": "https://opencv-windows.github.io/"},
-            {"@type": "ListItem", "position": 2, "name": "Install Methods", "item": "https://opencv-windows.github.io/install-methods.html"}
-          ]
-        }
-      },
-      {
-        "@type": "SoftwareApplication",
-        "name": "OpenCV for Windows",
-        "applicationCategory": "DeveloperApplication",
-        "operatingSystem": "Windows 11; Windows 10 (64-bit)",
-        "softwareVersion": "4.12.0",
-        "downloadUrl": "https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe",
-        "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-        "url": "https://opencv-windows.github.io/install-methods.html",
-        "screenshot": "https://opencv-windows.github.io/og-image.png",
-        "potentialAction": {
-          "@type": "InstallAction",
-          "target": "https://github.com/opencv/opencv/releases/download/4.12.0/opencv-4.12.0-windows.exe"
-        },
-        "operatingSystemVersion": "Windows 10/11 x64"
-      },
-      {
-        "@type": "FAQPage",
-        "mainEntity": [
-          {"@type": "Question", "name": "Is pip or conda better for OpenCV on Windows?", "acceptedAnswer": {"@type": "Answer", "text": "pip in a virtual environment is ideal for lightweight projects; conda is better for data science stacks with many native dependencies."}},
-          {"@type": "Question", "name": "Do I need to build from source?", "acceptedAnswer": {"@type": "Answer", "text": "Not for most users. Build when you need custom flags, contrib, or CUDA-enabled builds."}},
-          {"@type": "Question", "name": "When should I use vcpkg?", "acceptedAnswer": {"@type": "Answer", "text": "Use vcpkg for C++ projects to manage dependencies consistently across MSVC/Visual Studio and CI."}},
-          {"@type": "Question", "name": "Does the official Windows installer include CUDA?", "acceptedAnswer": {"@type": "Answer", "text": "Typically no; it targets CPU builds. For GPU, use a CUDA-enabled build or build from source."}}
-        ]
-      }
-    ]
-  }
-  </script>
-</body>
-</html>
+<nav class="site-nav"><div class="wrap"><div class="nav-inner"><a href="/index.html" class="nav-logo"><div class="nav-logo-mark">CV</div><span class="nav-logo-name">OpenCV</span><span class="nav-logo-sub">for Windows</span></a><div class="nav-links"><a href="/index.html" id="nl-home">Home</a><a href="/index.html" id="nl-dl">Download</a><a href="/python.html" id="nl-py">Python</a><a href="/cpp-visual-studio.html" id="nl-cpp">C++</a><a href="/cuda-gpu.html" id="nl-cuda">CUDA</a><a href="/troubleshooting.html" id="nl-fix">Fix errors</a><a href="/opencv-windows-faq.html" id="nl-faq">FAQ</a></div><a href="/index.html" class="nav-cta"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download</a></div></div></nav>
+<div class="page-hero"><div class="wrap">
+  <nav class="breadcrumb"><a href="/index.html">home</a> <span>/</span> <span>install-methods</span></nav>
+  <span class="page-tag ">Install guide</span>
+  <h1>OpenCV Windows install methods &mdash; <span>pip vs conda vs source vs vcpkg</span></h1>
+  <p class="page-lead">Four ways to install OpenCV on Windows compared: pip (easiest), conda (Anaconda users), build from source (CUDA support) and vcpkg (C++ Visual Studio).</p>
+  
+</div></div>
+<div class="wrap"><div class="content-layout">
+  <main><div class="callout callout-info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><span>For most Python users, <code>pip install opencv-python</code> is the right choice. Only use other methods if you have a specific reason.</span></div>
+<div class="section" aria-labelledby="compare-h2"><span class="section-label">Comparison</span><h2 id="compare-h2">OpenCV install methods compared</h2>
+<div class="tbl-wrap"><table><thead><tr><th>Method</th><th>Ease</th><th>CUDA support</th><th>Contrib modules</th><th>Best for</th></tr></thead><tbody>
+<tr><td><strong>pip</strong></td><td class="td-ok">Easiest</td><td class="td-bad">No</td><td class="td-ok">Yes (contrib pkg)</td><td>Most Python users</td></tr>
+<tr><td><strong>conda</strong></td><td class="td-ok">Easy</td><td class="td-bad">No</td><td class="td-ok">Yes</td><td>Anaconda users</td></tr>
+<tr><td><strong>Build from source</strong></td><td class="td-bad">Hard</td><td class="td-ok">Yes</td><td class="td-ok">Yes</td><td>CUDA, custom builds</td></tr>
+<tr><td><strong>vcpkg</strong></td><td>Medium</td><td>Optional</td><td class="td-ok">Yes</td><td>C++ / Visual Studio</td></tr>
+<tr><td><strong>Pre-built exe</strong></td><td class="td-ok">Easy</td><td class="td-bad">No</td><td>Limited</td><td>C++ without building</td></tr>
+</tbody></table></div>
+</div>
+<div class="section" aria-labelledby="pip-h2"><span class="section-label">Method 1 &mdash; recommended</span><h2 id="pip-h2">pip (PyPI wheels)</h2>
+<p>The simplest and most common installation method. Pre-compiled wheels for Windows x64 are available for Python 3.7&ndash;3.13.</p>
+<div class="term"><div class="term-bar"><div class="term-dot" style="background:#ff5f56"></div><div class="term-dot" style="background:#ffbd2e"></div><div class="term-dot" style="background:#27c93f"></div><span class="term-label">cmd.exe</span></div><div class="term-body"><div><span class="t-p">C:\&gt;</span> <span class="t-c">pip install opencv-python</span></div><div><span class="t-cm"># Or with extra modules:</span></div><div><span class="t-p">C:\&gt;</span> <span class="t-c">pip install opencv-contrib-python</span></div></div></div>
+<p><strong>Pros:</strong> one command, no compilation, updates easily. <strong>Cons:</strong> no CUDA, no custom build options.</p>
+</div>
+<div class="section" aria-labelledby="conda-h2"><span class="section-label">Method 2</span><h2 id="conda-h2">conda (Anaconda / Miniconda)</h2>
+<p>Good choice if you already use Anaconda. The conda-forge channel has well-maintained builds.</p>
+<div class="term"><div class="term-bar"><div class="term-dot" style="background:#ff5f56"></div><div class="term-dot" style="background:#ffbd2e"></div><div class="term-dot" style="background:#27c93f"></div><span class="term-label">Anaconda Prompt</span></div><div class="term-body"><div><span class="t-p">(base)&gt;</span> <span class="t-c">conda install -c conda-forge opencv</span></div></div></div>
+<p><strong>Pros:</strong> integrates with conda environments, handles native library dependencies well. <strong>Cons:</strong> no CUDA, slightly older builds than pip.</p>
+</div>
+<div class="section" aria-labelledby="source-h2"><span class="section-label">Method 3</span><h2 id="source-h2">Build from source (CMake)</h2>
+<p>Required for CUDA GPU acceleration or custom feature sets. Takes 30&ndash;90 minutes to compile.</p>
+<div class="term"><div class="term-bar"><div class="term-dot" style="background:#ff5f56"></div><div class="term-dot" style="background:#ffbd2e"></div><div class="term-dot" style="background:#27c93f"></div><span class="term-label">PowerShell</span></div><div class="term-body"><div><span class="t-p">PS&gt;</span> <span class="t-c">git clone https://github.com/opencv/opencv.git</span></div><div><span class="t-p">PS&gt;</span> <span class="t-c">cmake -B build -DWITH_CUDA=ON -DCUDA_ARCH_BIN="8.6"</span></div><div><span class="t-p">PS&gt;</span> <span class="t-c">cmake --build build --config Release --parallel 8</span></div></div></div>
+<p>Full guide: <a href="/opencv-cmake-windows.html">CMake build guide</a>. For CUDA: <a href="/cuda-gpu.html">CUDA guide</a>.</p>
+<p><strong>Pros:</strong> full control, CUDA support, latest features. <strong>Cons:</strong> complex, slow to compile, requires Visual Studio.</p>
+</div>
+<div class="section" aria-labelledby="vcpkg-h2"><span class="section-label">Method 4</span><h2 id="vcpkg-h2">vcpkg (C++ package manager)</h2>
+<p>Microsoft's C++ package manager. Good integration with Visual Studio.</p>
+<div class="term"><div class="term-bar"><div class="term-dot" style="background:#ff5f56"></div><div class="term-dot" style="background:#ffbd2e"></div><div class="term-dot" style="background:#27c93f"></div><span class="term-label">PowerShell</span></div><div class="term-body"><div><span class="t-cm"># Install vcpkg first if needed:</span></div><div><span class="t-p">PS&gt;</span> <span class="t-c">git clone https://github.com/microsoft/vcpkg.git</span></div><div><span class="t-p">PS&gt;</span> <span class="t-c">.\vcpkg\bootstrap-vcpkg.bat</span></div><div></div><div><span class="t-cm"># Install OpenCV:</span></div><div><span class="t-p">PS&gt;</span> <span class="t-c">.\vcpkg\vcpkg.exe install opencv4[contrib]:x64-windows</span></div><div></div><div><span class="t-cm"># Integrate with Visual Studio:</span></div><div><span class="t-p">PS&gt;</span> <span class="t-c">.\vcpkg\vcpkg.exe integrate install</span></div></div></div>
+<p><strong>Pros:</strong> seamless Visual Studio integration, contrib modules included. <strong>Cons:</strong> large download, no CUDA by default.</p>
+</div>
+<div class="section" aria-labelledby="faq-h2"><span class="section-label">FAQ</span><h2 id="faq-h2">Install method questions</h2><div class="faq">
+<div class="faq-item"><details><summary>Can I mix pip and conda OpenCV?</summary><div class="faq-ans">No. Never install both opencv-python (pip) and opencv (conda) in the same environment. They will conflict and cause import errors. Stick to one package manager per environment.</div></details></div>
+<div class="faq-item"><details><summary>Is there a pre-built CUDA wheel for pip?</summary><div class="faq-ans">Not officially. Some third-party wheels exist on GitHub (search "opencv-python cuda wheel") but they are unofficial and may not match your CUDA/cuDNN version. For production CUDA use, build from source.</div></details></div>
+<div class="faq-item"><details><summary>Which method should I use for a web server / Docker?</summary><div class="faq-ans">Use <code>pip install opencv-python-headless</code>. The headless package excludes GUI dependencies (Qt) which are not needed on a server and can cause errors in headless environments. See <a href="/opencv-headless-windows.html">Headless guide</a>.</div></details></div>
+</div></div>
+<div class="cta-banner"><div><h2>Using Anaconda?</h2><p>Full conda setup guide with environment creation.</p></div><a href="/opencv-conda-windows.html" class="btn-white"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Conda guide</a></div>
+<div style="margin-bottom:28px"><span class="section-label">Related guides</span><div class="rel-grid"><a href="/python.html" class="rel-card"><div class="rel-title">Python / pip &rarr;</div><div class="rel-sub">pip install guide</div></a><a href="/opencv-cmake-windows.html" class="rel-card"><div class="rel-title">CMake build &rarr;</div><div class="rel-sub">build from source</div></a><a href="/opencv-conda-windows.html" class="rel-card"><div class="rel-title">Conda &rarr;</div><div class="rel-sub">Anaconda setup</div></a></div></div></main>
+  <aside class="content-sidebar"><div class="sb-card ver-badge"><div class="ver-badge-label">Latest</div><div class="ver-badge-val">4.12.0</div><div class="ver-badge-sub">May 2026</div></div><div class="sb-card"><div class="sb-card-title">Install</div><ul class="sb-links"><li><a href="/index.html">Download OpenCV</a></li><li><a href="/python.html">Python install</a></li><li><a href="/cpp-visual-studio.html">C++ / Visual Studio</a></li><li><a href="/install-methods.html" class="cur">Install methods</a></li><li><a href="/opencv-cmake-windows.html">CMake build</a></li><li><a href="/opencv-contrib-windows.html">Contrib modules</a></li></ul></div><div class="sb-card"><div class="sb-card-title">Fix errors</div><ul class="sb-links"><li><a href="/troubleshooting.html">Troubleshooting</a></li><li><a href="/opencv-iconv-dll-error.html">opencv_iconv.dll</a></li><li><a href="/opencv-world-dll-not-found.html">opencv_world.dll</a></li><li><a href="/opencv-python-not-found.html">import cv2 error</a></li><li><a href="/opencv-video-capture-windows.html">VideoCapture issues</a></li></ul></div><div class="sb-card"><div class="sb-card-title">More</div><ul class="sb-links"><li><a href="/cuda-gpu.html">CUDA / GPU</a></li><li><a href="/opencv-conda-windows.html">Conda / Anaconda</a></li><li><a href="/opencv-vs-code-windows.html">VS Code</a></li><li><a href="/opencv-headless-windows.html">Headless mode</a></li><li><a href="/quickstart.html">Quickstart</a></li><li><a href="/opencv-windows-faq.html">FAQ</a></li></ul></div></aside>
+</div></div>
+<footer class="site-footer"><div class="wrap"><div class="footer-inner"><div><div class="footer-logo"><div class="footer-logo-mark">CV</div><span class="footer-logo-name">OpenCV for Windows</span></div><p class="footer-tagline">Unofficial Windows guide for OpenCV &mdash; install, configure, fix errors.</p></div><div><div class="footer-col-title">Install</div><ul class="footer-links"><li><a href="/index.html">Download OpenCV</a></li><li><a href="/python.html">Python install</a></li><li><a href="/cpp-visual-studio.html">C++ / Visual Studio</a></li><li><a href="/install-methods.html">Install methods</a></li><li><a href="/opencv-cmake-windows.html">CMake build</a></li></ul></div><div><div class="footer-col-title">Features</div><ul class="footer-links"><li><a href="/cuda-gpu.html">CUDA / GPU</a></li><li><a href="/opencv-contrib-windows.html">Contrib modules</a></li><li><a href="/opencv-conda-windows.html">Conda / Anaconda</a></li><li><a href="/opencv-headless-windows.html">Headless mode</a></li><li><a href="/opencv-vs-code-windows.html">VS Code setup</a></li></ul></div><div><div class="footer-col-title">Fix errors</div><ul class="footer-links"><li><a href="/troubleshooting.html">Troubleshooting</a></li><li><a href="/opencv-iconv-dll-error.html">opencv_iconv.dll fix</a></li><li><a href="/opencv-world-dll-not-found.html">opencv_world.dll fix</a></li><li><a href="/opencv-python-not-found.html">import cv2 error</a></li><li><a href="/opencv-windows-faq.html">FAQ</a></li></ul></div></div><div class="footer-bottom"><p>Not affiliated with the OpenCV project or opencv.org. Unofficial community guide.</p><p><strong>Affiliate disclosure:</strong> Download links may be partner links.</p></div></div></footer><div class="cookie-bar" id="cookieBar" style="display:none"><p>We use Google Analytics for anonymous traffic data. <a href="/privacy.html">Privacy policy</a></p><div class="cookie-btns"><button class="cookie-accept" id="cookieAccept">Accept</button><button class="cookie-decline" id="cookieDecline">Decline</button></div></div><script async src="https://www.googletagmanager.com/gtag/js?id=G-PJKKMYVY7D"></script><script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag("consent","default",{analytics_storage:"denied",ad_storage:"denied"});gtag("js",new Date());gtag("config","G-PJKKMYVY7D",{anonymize_ip:true,send_page_view:false});function grantGA(){gtag("consent","update",{analytics_storage:"granted"});gtag("event","page_view",{page_location:location.href,page_title:document.title})}document.addEventListener("DOMContentLoaded",function(){var bar=document.getElementById("cookieBar");var c=localStorage.getItem("cv_consent");if(!c){bar.style.display="flex"}else if(c==="1"){grantGA()}document.getElementById("cookieAccept").addEventListener("click",function(){localStorage.setItem("cv_consent","1");grantGA();bar.style.display="none"});document.getElementById("cookieDecline").addEventListener("click",function(){localStorage.setItem("cv_consent","0");bar.style.display="none"});});</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"OpenCV Windows Install Methods Compared","description":"Compare pip, conda, source build and vcpkg for installing OpenCV on Windows.","url":"https://opencv-windows.github.io/install-methods.html"}</script>
+<script>var el=document.getElementById("nl-home");if(el)el.classList.add("active");</script>
+</body></html>
